@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Countdown</title>
+  <style>
+    /* RESET */
+    *, *::before, *::after { box-sizing: border-box }
+    * { margin: 0 }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      
+      background:
+        radial-gradient(black 15%, transparent 16%) 0 0,
+        radial-gradient(black 15%, transparent 16%) 8px 8px,
+        radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+        radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+      background-color:#282828;
+      background-size:16px 16px;
+    }
+    .flex-center {
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .grid-footer {
+      height: 100%;
+      color:white;
+      display: grid;
+      grid-template-rows: 1fr auto;
+    }
+    footer {
+      display: flex;
+      justify-content: flex-end;
+    }
+    button {
+      background: unset;
+      border: unset;
+      color: #bbb;
+      font-size: 1.5em;
+      padding: 18px;
+    }
+    button:hover {
+      background-color:#0ff4;
+    }
+    .d-none { display: none }
+
+    #inputDate { font-size: min(5em, 6vw) }
+    #outputDate {
+      color: white;
+      font-size: 9vw;
+      /* width: fit-content; */
+      width: max-content;
+      margin: 20vh auto;
+      border: 5px solid white;
+      padding: 15px 7vw;
+      height: max-content;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- with date -->
+  <div class="grid-footer d-none">
+    <div class="flex-center" id="outputDate"></div>
+    <footer>
+      <button onclick="cancelFullScreen()" id="exitFullSreen" hidden>&minus;</button>
+      <div id="fullScreen">
+        <button onclick="launchFullScreen()">Fullscreen</button>
+        <button onclick="shared()">Shared</button>
+        <button onclick="redirect()">Clear</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- without date -->
+  <div class="flex-center d-none">
+    <input type="datetime-local" id="inputDate">
+  </div>
+  
+  <!-- <input type="datetime-local" id="inputDate" hidden> -->
+  <!-- <div id="outputDate" hidden></div> -->
+
+  <script>
+    function launchFullScreen() {
+      if(document.documentElement.requestFullScreen) document.documentElement.requestFullScreen();
+      else if(document.documentElement.mozRequestFullScreen) document.documentElement.mozRequestFullScreen();
+      else if(document.documentElement.webkitRequestFullScreen) document.documentElement.webkitRequestFullScreen();
+
+      fullScreen.hidden=true;
+      exitFullSreen.hidden=false;
+    }
+
+    function cancelFullScreen() {
+        if(document.cancelFullScreen) document.cancelFullScreen();
+        else if(document.mozCancelFullScreen) document.mozCancelFullScreen();
+        else if(document.webkitCancelFullScreen) document.webkitCancelFullScreen();
+
+        fullScreen.hidden=false;
+        exitFullSreen.hidden=true;
+    }
+
+    function redirect() {
+      location.href = location.origin + location.pathname;
+    }
+    function shared(){
+      navigator.share({
+        title: 'This is the Final Countdown',
+        // text: 'Description of the shared content',
+        url: location.href,
+      });
+    }
+
+    function setDate( countDownDate = 0 ) {
+      const outputDate = document.querySelector('#outputDate');
+      console.log('setDate');
+      // let countDownDate = 0;
+
+      outputDate?.parentNode?.classList?.remove('d-none');
+
+      try {
+        setInterval( function() {
+          var now      = new Date().getTime(),
+              distance = countDownDate - now,
+              days     = Math.floor(distance / (1000 * 60 * 60 * 24)),
+              hours    = ( '0' + Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) ).slice(-2),
+              minutes  = ( '0' + Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)) ).slice(-2),
+              seconds  = ( '0' + Math.floor((distance % (1000 * 60)) / 1000) ).slice(-2);
+
+          outputDate.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+
+          if (distance < 0) outputDate.innerHTML = "EXPIRED";
+        }, 1000);        
+      } catch (err) {
+        alert(err)
+      }
+    }
+
+    function getDate() {
+      const inputDate = document.querySelector('#inputDate');
+      let countDownDate = 0;
+
+      inputDate?.parentNode?.classList?.remove('d-none');
+
+      inputDate.addEventListener('change', function() {
+        if ( !!inputDate.value ) {
+        countDownDate = (new Date( inputDate.value )).getTime()
+        location.href = (location.origin + location.pathname + '?date=' + countDownDate);
+      }
+      
+      })
+    }
+
+    function init() {
+      const urlParams = new URLSearchParams(window.location.search);
+      // const inputDate = document.querySelector('#inputDate'),
+      //     outputDate = document.querySelector('#outputDate');
+      // let countDownDate = 0;
+      let dateParam = urlParams.get('date')
+
+      !!dateParam && console.log(dateParam); // "s"
+
+      ( !!dateParam )
+        ? setDate( dateParam ) // console.log(dateParam)
+        : getDate() //console.log("Sin fecha");
+      
+      //var countDownDate = new Date("Jan 5, 2022 15:37:25").getTime();
+      
+      // inputDate.addEventListener('change', function() {
+      //   (inputDate.value)?
+      //   countDownDate = (new Date( inputDate.value )).getTime()
+      //   :countDownDate = 0;
+      // })
+
+      // setInterval( function() {
+      //   var now      = new Date().getTime(),
+      //       distance = countDownDate - now,
+      //       days     = Math.floor(distance / (1000 * 60 * 60 * 24)),
+      //       hours    = ( '0' + Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) ).slice(-2),
+      //       minutes  = ( '0' + Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)) ).slice(-2),
+      //       seconds  = ( '0' + Math.floor((distance % (1000 * 60)) / 1000) ).slice(-2);
+
+      //   outputDate.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+
+      //   if (distance < 0) outputDate.innerHTML = "EXPIRED";
+      // }, 1000);
+    }
+
+    // Escapar problemas con Safari
+    ( document.readyState !== 'loading' )
+      ? init()
+      : document.addEventListener('DOMContentLoaded', init );
+  </script>
+</body>
+</html>
