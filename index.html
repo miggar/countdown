@@ -68,10 +68,10 @@
   <div class="grid-footer d-none">
     <div class="flex-center" id="outputDate"></div>
     <footer>
-      <button onclick="cancelFullScreen()" id="exitFullSreen" class="d-none">&minus;</button>
+      <button onclick="cancelFullScreen()" id="exitFullSreen" hidden>&minus;</button>
       <div id="fullScreen">
         <button onclick="launchFullScreen()">Fullscreen</button>
-        <button onclick="shared()">Shared</button>
+        <button onclick="shared()" id="shared" hidden>Shared</button>
         <button onclick="redirect()">Clear</button>
       </div>
     </footer>
@@ -84,25 +84,33 @@
 
   <script>
     function launchFullScreen() {
+      const fullScreen = document.getElementById('fullScreen');
+      const exitFullSreen = document.getElementById('exitFullSreen');
+
       if(document.documentElement.requestFullScreen) document.documentElement.requestFullScreen();
       else if(document.documentElement.mozRequestFullScreen) document.documentElement.mozRequestFullScreen();
       else if(document.documentElement.webkitRequestFullScreen) document.documentElement.webkitRequestFullScreen();
       
-      fullScreen.classList.add('d-none');
-      exitFullSreen.classList.remove('d-none');
+      fullScreen.hidden=true;
+      exitFullSreen.hidden=false;
     }
 
     function cancelFullScreen() {
-        if(document.cancelFullScreen) document.cancelFullScreen();
-        else if(document.mozCancelFullScreen) document.mozCancelFullScreen();
-        else if(document.webkitCancelFullScreen) document.webkitCancelFullScreen();
+      const fullScreen = document.getElementById('fullScreen');
+      const exitFullSreen = document.getElementById('exitFullSreen');
 
-        fullScreen.classList.remove('d-none');
-        exitFullSreen.classList.add('d-none');
+      if(document.cancelFullScreen) document.cancelFullScreen();
+      else if(document.mozCancelFullScreen) document.mozCancelFullScreen();
+      else if(document.webkitCancelFullScreen) document.webkitCancelFullScreen();
+
+      fullScreen.hidden=false;
+      exitFullSreen.hidden=true;
     }
 
     function redirect() {
-      location.href = location.origin + location.pathname;
+      const origin = (!!location.origin   && location.origin   != "null")? location.origin   : '';
+      const path   = (!!location.pathname && location.pathname != "null")? location.pathname : '';
+      location.href = origin + path;
     }
     function shared(){
       navigator.share({
@@ -142,16 +150,23 @@
       inputDate?.parentNode?.classList?.remove('d-none');
 
       inputDate.addEventListener('change', function() {
+        let origin = "";
+        let path   = "";
         if ( !!inputDate.value ) {
           countDownDate = (new Date( inputDate.value )).getTime()
-          location.href = (location.origin + location.pathname + '?date=' + countDownDate);
+          origin = (!!location.origin   && location.origin   != "null")? location.origin   : '';
+          path   = (!!location.pathname && location.pathname != "null")? location.pathname : '';
+          location.href = (origin + path + '?date=' + countDownDate);
         }
       })
     }
 
     function init() {
       const urlParams = new URLSearchParams(window.location.search);
+      const shared = document.getElementById('shared');
       let dateParam = urlParams.size && urlParams.get('date');
+
+      ("share" in navigator) && (shared.hidden = false); // in firefox is not supported
 
       ( !!dateParam )
         ? setDate( dateParam )
