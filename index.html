@@ -114,8 +114,7 @@
 
     function setDate( countDownDate = 0 ) {
       const outputDate = document.querySelector('#outputDate');
-      console.log('setDate');
-
+      
       outputDate?.parentNode?.classList?.remove('d-none');
 
       try {
@@ -152,7 +151,7 @@
 
     function init() {
       const urlParams = new URLSearchParams(window.location.search);
-      let dateParam = urlParams.get('date')
+      let dateParam = urlParams.size && urlParams.get('date');
 
       ( !!dateParam )
         ? setDate( dateParam )
