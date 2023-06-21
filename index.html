@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Countdown</title>
+  <title>Countdown</title>  
+  <link rel="stylesheet" href="ms-icons.css">
   <style>
     /* RESET */
     *, *::before, *::after { box-sizing: border-box }
@@ -68,11 +69,19 @@
   <div class="grid-footer d-none">
     <div class="flex-center" id="outputDate"></div>
     <footer>
-      <button onclick="cancelFullScreen()" id="exitFullSreen" hidden>&minus;</button>
+      <button onclick="cancelFullScreen()" id="exitFullSreen" hidden>
+        <i class="ms-Icon ms-Icon--ChromeMinimize"></i>
+      </button>
       <div id="fullScreen">
-        <button onclick="launchFullScreen()">Fullscreen</button>
-        <button onclick="shared()" id="shared" hidden>Shared</button>
-        <button onclick="redirect()">Clear</button>
+        <button onclick="launchFullScreen()">
+          <i class="ms-Icon ms-Icon--FullView"></i>
+        </button>
+        <button onclick="share()" id="share" hidden>
+          <i class="ms-Icon ms-Icon--Share"></i>
+        </button>
+        <button onclick="redirect()">
+          <i class="ms-Icon ms-Icon--CalendarSettingsMirrored"></i>
+        </button>
       </div>
     </footer>
   </div>
@@ -112,10 +121,10 @@
       const path   = (!!location.pathname && location.pathname != "null")? location.pathname : '';
       location.href = origin + path;
     }
-    function shared(){
+    function share(){
       navigator.share({
         title: 'This is the Final Countdown',
-        // text: 'Description of the shared content',
+        // text: 'Description of the share content',
         url: location.href,
       });
     }
@@ -163,10 +172,10 @@
 
     function init() {
       const urlParams = new URLSearchParams(window.location.search);
-      const shared = document.getElementById('shared');
+      const share = document.getElementById('share');
       let dateParam = urlParams.size && urlParams.get('date');
 
-      ("share" in navigator) && (shared.hidden = false); // in firefox is not supported
+      ("share" in navigator) && (share.hidden = false); // in firefox is not supported
 
       ( !!dateParam )
         ? setDate( dateParam )
