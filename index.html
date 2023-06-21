@@ -54,7 +54,6 @@
     #outputDate {
       color: white;
       font-size: 9vw;
-      /* width: fit-content; */
       width: max-content;
       margin: 20vh auto;
       border: 5px solid white;
@@ -69,7 +68,7 @@
   <div class="grid-footer d-none">
     <div class="flex-center" id="outputDate"></div>
     <footer>
-      <button onclick="cancelFullScreen()" id="exitFullSreen" hidden>&minus;</button>
+      <button onclick="cancelFullScreen()" id="exitFullSreen" class="d-none">&minus;</button>
       <div id="fullScreen">
         <button onclick="launchFullScreen()">Fullscreen</button>
         <button onclick="shared()">Shared</button>
@@ -82,18 +81,15 @@
   <div class="flex-center d-none">
     <input type="datetime-local" id="inputDate">
   </div>
-  
-  <!-- <input type="datetime-local" id="inputDate" hidden> -->
-  <!-- <div id="outputDate" hidden></div> -->
 
   <script>
     function launchFullScreen() {
       if(document.documentElement.requestFullScreen) document.documentElement.requestFullScreen();
       else if(document.documentElement.mozRequestFullScreen) document.documentElement.mozRequestFullScreen();
       else if(document.documentElement.webkitRequestFullScreen) document.documentElement.webkitRequestFullScreen();
-
-      fullScreen.hidden=true;
-      exitFullSreen.hidden=false;
+      
+      fullScreen.classList.add('d-none');
+      exitFullSreen.classList.remove('d-none');
     }
 
     function cancelFullScreen() {
@@ -101,8 +97,8 @@
         else if(document.mozCancelFullScreen) document.mozCancelFullScreen();
         else if(document.webkitCancelFullScreen) document.webkitCancelFullScreen();
 
-        fullScreen.hidden=false;
-        exitFullSreen.hidden=true;
+        fullScreen.classList.remove('d-none');
+        exitFullSreen.classList.add('d-none');
     }
 
     function redirect() {
@@ -119,7 +115,6 @@
     function setDate( countDownDate = 0 ) {
       const outputDate = document.querySelector('#outputDate');
       console.log('setDate');
-      // let countDownDate = 0;
 
       outputDate?.parentNode?.classList?.remove('d-none');
 
@@ -149,46 +144,19 @@
 
       inputDate.addEventListener('change', function() {
         if ( !!inputDate.value ) {
-        countDownDate = (new Date( inputDate.value )).getTime()
-        location.href = (location.origin + location.pathname + '?date=' + countDownDate);
-      }
-      
+          countDownDate = (new Date( inputDate.value )).getTime()
+          location.href = (location.origin + location.pathname + '?date=' + countDownDate);
+        }
       })
     }
 
     function init() {
       const urlParams = new URLSearchParams(window.location.search);
-      // const inputDate = document.querySelector('#inputDate'),
-      //     outputDate = document.querySelector('#outputDate');
-      // let countDownDate = 0;
       let dateParam = urlParams.get('date')
 
-      !!dateParam && console.log(dateParam); // "s"
-
       ( !!dateParam )
-        ? setDate( dateParam ) // console.log(dateParam)
-        : getDate() //console.log("Sin fecha");
-      
-      //var countDownDate = new Date("Jan 5, 2022 15:37:25").getTime();
-      
-      // inputDate.addEventListener('change', function() {
-      //   (inputDate.value)?
-      //   countDownDate = (new Date( inputDate.value )).getTime()
-      //   :countDownDate = 0;
-      // })
-
-      // setInterval( function() {
-      //   var now      = new Date().getTime(),
-      //       distance = countDownDate - now,
-      //       days     = Math.floor(distance / (1000 * 60 * 60 * 24)),
-      //       hours    = ( '0' + Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) ).slice(-2),
-      //       minutes  = ( '0' + Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)) ).slice(-2),
-      //       seconds  = ( '0' + Math.floor((distance % (1000 * 60)) / 1000) ).slice(-2);
-
-      //   outputDate.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
-
-      //   if (distance < 0) outputDate.innerHTML = "EXPIRED";
-      // }, 1000);
+        ? setDate( dateParam )
+        : getDate()
     }
 
     // Escapar problemas con Safari
